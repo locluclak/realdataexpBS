@@ -2,7 +2,9 @@ import pandas as pd
 import numpy as np 
 from sklearn.preprocessing import normalize, StandardScaler
 
-def Walmart_sales_holiday():
+def Walmart_sales_holiday(num=20, seed=-1):
+    if seed != -1:
+        np.random.seed(seed)
     df = pd.read_csv('dataset/Walmart_sales_holiday.csv')
 
     response = "Weekly_Sales"
@@ -20,7 +22,9 @@ def Walmart_sales_holiday():
     X = X[indexes, :].copy()
     return X, y
 
-def Walmart_sales_noholiday():
+def Walmart_sales_noholiday(num=100, seed=-1):
+    if seed != -1:
+        np.random.seed(seed)    
     df = pd.read_csv('dataset/Walmart_sales_noholiday.csv')
 
     response = "Weekly_Sales"

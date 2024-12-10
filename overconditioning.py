@@ -114,7 +114,7 @@ def interval_SBSabs(X, Y, K, lst_SELEC_k, a, b):
                 Vplus = min(Vplus, temp)
             else:
                 Vminus = max(Vminus, temp)
-    return Vminus, Vplus
+    return [(Vminus, Vplus)]
 def interval_SBS(X, Y, K, lst_SELEC_k, a, b):
     n_sample, n_fea = X.shape
     intervals = [(-np.inf, np.inf)]
@@ -216,15 +216,21 @@ def interval_AIC_BS(X, Y, Portho, K, a, b, Sigma, seed = 0):
             intervals = intersection.Intersec(intervals, itv)
     return intervals 
 
-def OC_DA_BS_Criterion(ns, nt, a, b, XsXt_, Xtilde, Ytilde, Sigmatilde, B, S_, h_, SELECTION_F, GAMMA,seed = 0):
+def OC_DA_BS_Criterion(ns, nt, a, b, XsXt_, Xtilde, Ytilde, Sigmatilde, B, S_, h_, SELECTION_F, GAMMA,seed = 0, meth = 'OC'):
 
     lst_SELECk, lst_P = ForwardSelection.list_residualvec_BS(Xtilde, Ytilde)
     lst_SELECk.reverse()
     itvDA = interval_DA(ns, nt, XsXt_, B, S_, h_, a, b)
-    itvBS = interval_SBS(Xtilde, Ytilde, 
-                                    len(SELECTION_F),
-                                    lst_SELECk,
-                                    GAMMA.dot(a), GAMMA.dot(b))
+    if meth == 'OC':
+        itvBS = interval_SBSabs(Xtilde, Ytilde, 
+                                        len(SELECTION_F),
+                                        lst_SELECk,
+                                        GAMMA.dot(a), GAMMA.dot(b))
+    else:
+        itvBS = interval_SBS(Xtilde, Ytilde, 
+                                        len(SELECTION_F),
+                                        lst_SELECk,
+                                        GAMMA.dot(a), GAMMA.dot(b))
     itvCriterion = interval_AIC_BS(Xtilde, Ytilde, 
                                         lst_P, len(SELECTION_F), 
                                         GAMMA.dot(a), GAMMA.dot(b), Sigmatilde, seed)
@@ -241,13 +247,17 @@ def OC_DA_BS_Criterion(ns, nt, a, b, XsXt_, Xtilde, Ytilde, Sigmatilde, B, S_, h
     return finalinterval
 
 
-def OC_fixedBS_interval(ns, nt, a, b, XsXt_, Xtilde, Ytilde, Sigmatilde, B, S_, h_, SELECTION_F, GAMMA,):
+def OC_fixedBS_interval(ns, nt, a, b, XsXt_, Xtilde, Ytilde, Sigmatilde, B, S_, h_, SELECTION_F, GAMMA,meth ='OC'):
 
     lst_SELECk = ForwardSelection.list_residualvec_BS(Xtilde, Ytilde)[0]
     lst_SELECk.reverse()
     itvDA = interval_DA(ns, nt, XsXt_, B, S_, h_, a, b)
-    itvBS = interval_SBS(Xtilde, Ytilde, len(SELECTION_F),
-                                    lst_SELECk, GAMMA.dot(a), GAMMA.dot(b))
+    if meth == 'OC':
+        itvBS = interval_SBSabs(Xtilde, Ytilde, len(SELECTION_F),
+                                        lst_SELECk, GAMMA.dot(a), GAMMA.dot(b))
+    else:
+        itvBS = interval_SBS(Xtilde, Ytilde, len(SELECTION_F),
+                                        lst_SELECk, GAMMA.dot(a), GAMMA.dot(b))
     # print(itvDA, itvFS)
     finalinterval = intersection.Intersec(itvDA, itvBS) 
     return finalinterval, itvDA, itvBS

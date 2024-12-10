@@ -3,7 +3,9 @@ import numpy as np
 from random import sample
 from sklearn.preprocessing import normalize, StandardScaler
 
-def undereq50(num = 20):
+def undereq50(num = 20,seed=-1):
+    if seed != -1:
+        np.random.seed(seed)
     df = pd.read_csv('dataset/Heart_failure_undereq50_data.csv')
 
     response = "time"
@@ -20,7 +22,9 @@ def undereq50(num = 20):
 
     return X, y
 
-def larger50(num = 100):
+def larger50(num = 100,seed = -1):
+    if seed != -1:
+        np.random.seed(seed)
     df = pd.read_csv('dataset/Heart_failure_larger50_data.csv')
 
     response = "time"
